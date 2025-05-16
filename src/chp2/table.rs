@@ -1,5 +1,10 @@
 use std::io;
 
+
+/*
+    Take a integer input from the user and print table for that integer using a loop.
+ */
+
 pub fn table(){
     let mut input = String::new();
 
