@@ -13,7 +13,7 @@ pub mod date_program {
     use regex::Regex;
     use std::cmp::PartialEq;
     use std::collections::HashMap;
-    use std::io::{self, Write};
+    use std::io::{self, BufRead, Write};
     use std::str::FromStr;
     use std::sync::Mutex;
 
@@ -127,7 +127,7 @@ pub mod date_program {
 
     static STORE: Lazy<Mutex<HashMap<u8, Date>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 
-    pub fn date_main(){
+    pub fn date_main() -> Result<(), String>{
 
         loop {
 
@@ -163,7 +163,7 @@ pub mod date_program {
                 }
                 false => {
                     println!("Something is wrong with dates, please check whether it's in's proper format");
-                    continue
+                    continue;
                 }
             };
 
@@ -173,9 +173,82 @@ pub mod date_program {
             } else {
                 println!("Date are not equal")
             }
-            break
+            break;
         }
+
+        Ok(())
 
     }
 
+    pub fn date_main_with_input<R: BufRead, W: Write>(input: &mut R, output: &mut W) -> Result<(), String> {
+        loop {
+            writeln!(output, "\n==Welcome to Date Compare==").unwrap();
+            writeln!(output, "Please enter dates").unwrap();
+            output.flush().unwrap();
+
+            let mut dates = String::new();
+            input.read_line(&mut dates).unwrap();
+
+            let date_older = dates.trim().split_whitespace().collect::<Vec<&str>>();
+
+            if date_older.is_empty() {
+                writeln!(output, "Date is empty").unwrap();
+                continue;
+            } else if date_older.len() != 2 {
+                writeln!(output, "Enter 2 dates and not {}", date_older.len()).unwrap();
+                continue;
+            }
+
+            let first_date = date_older[0];
+            let second_date = date_older[1];
+
+            match validate_date(first_date, second_date) {
+                true => {
+                    let first = first_date.parse::<Date>().unwrap();
+                    let second = second_date.parse::<Date>().unwrap();
+                    Date::insert_date(first, second);
+                }
+                false => {
+                    writeln!(
+                        output,
+                        "Something is wrong with dates, please check whether it's in proper format"
+                    )
+                        .unwrap();
+                    continue;
+                }
+            }
+
+            Date::print_date();
+            if Date::compare() {
+                writeln!(output, "Dates are equal").unwrap();
+            } else {
+                writeln!(output, "Dates are not equal").unwrap();
+            }
+            break;
+        }
+
+        Ok(())
+    }
+}
+
+
+
+#[cfg(test)]
+mod tests {
+    use crate::chp3::date_program::date_program::date_main_with_input;
+
+    #[test]
+    fn test_date_main_success() {
+        // Simulate input "2023-01-01 2023-01-02"
+        let mut input = "2023-01-01 2023-01-02\n".as_bytes();
+        let mut output = Vec::new();
+
+        // Assume `validate_date` returns true for these inputs
+        assert!(date_main_with_input(&mut input, &mut output).is_ok());
+
+        // Check if output contains expected messages
+        let output_str = String::from_utf8(output).unwrap();
+        assert!(output_str.contains("Welcome to Date Compare"));
+        assert!(output_str.contains("Dates are not equal")); // or "equal" depending on comparison
+    }
 }

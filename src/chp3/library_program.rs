@@ -190,8 +190,16 @@ pub mod library_program {
             }
         }
 
-
     }
 
+}
 
+mod tests {
+    use crate::chp3::library_program::library_program::book_main;
+
+    #[test]
+    pub fn test_book() {
+        //TODO refactor to make testable
+        assert_eq!((), book_main())
+    }
 }
