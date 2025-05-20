@@ -1,4 +1,3 @@
-
 /*
     a. Implement custom Iterator trait for a struct named GeometricSeries
     that has 3 fields first_number, current_number and ratio of type i32.
