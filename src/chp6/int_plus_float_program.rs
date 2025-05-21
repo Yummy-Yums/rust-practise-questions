@@ -69,21 +69,19 @@ pub mod int_plus_float_program {
 
 }
 
-mod tests{
+mod tests {
 
     use super::int_plus_float_program::*;
+
     #[test]
     pub fn test_int_plus_float_program(){
-        let integer = 5;
-        let float: f32 = 3.14;
 
-        let num_from_int   = Number::from(integer);
-        let num_from_float = Number::from(float);
+        let num_from_int   = Number::from(5);
+        let num_from_float = Number::from(3.14);
 
         let result1 = num_from_int + num_from_float;
         assert_eq!(Number(8.140000104904175), result1);
 
-        // Or use the direct implementations
         let result2 = num_from_int + 10;
         assert_eq!(Number(15.0), result2);
 
